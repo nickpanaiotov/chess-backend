@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
-//@EnableReactiveMongoRepositories
+@EnableReactiveMongoRepositories
 public class MongoReactiveApplication extends AbstractReactiveMongoConfiguration {
     @Bean
     public MongoClient mongoClient() {
