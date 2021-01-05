@@ -43,9 +43,10 @@ public class SecurityConfiguration {
                 .and()
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange(exchanges ->
-                        exchanges.pathMatchers(HttpMethod.POST, "/authentication/token").permitAll()
+                        exchanges
+                                .pathMatchers(HttpMethod.POST, "/authentication/token").permitAll()
                                 .pathMatchers(HttpMethod.POST, "/users").permitAll()
-                                .pathMatchers("/v2/api-docs", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+                                .pathMatchers("/v2/api-docs", "/swagger-ui/**", "/swagger-resources/**", "/actuator/**").permitAll()
                                 .anyExchange().authenticated()
                 )
                 .addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider), SecurityWebFiltersOrder.HTTP_BASIC)
