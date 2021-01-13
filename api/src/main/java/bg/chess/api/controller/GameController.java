@@ -36,18 +36,20 @@ public class GameController {
         return this.gameService.createGame(user.getUsername(), game, join);
     }
 
-    @PostMapping("/{gameId}/join")
-    public Mono<Game> join(@PathVariable String gameId) {
-        return null;
-    }
-
     @PutMapping("/{gameId}")
     public Mono<Game> move(@PathVariable String gameId,
                            @RequestParam(required = false) String move) {
         return this.gameService.move(gameId, StringUtils.hasText(move) ? Move.of(move) : null);
     }
 
-    @PostMapping("/test")
+    @PostMapping("/{gameId}/join/{side}")
+    public Mono<Game> join(@AuthenticationPrincipal User user,
+                           @PathVariable String gameId,
+                           @PathVariable Side side) {
+        return this.gameService.join(user.getUsername(), gameId, side);
+    }
+
+//    @PostMapping("/test")
     public Mono<String> test() {
         return this.gameService.test();
     }

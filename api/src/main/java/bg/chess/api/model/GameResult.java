@@ -7,9 +7,10 @@ public enum GameResult {
     WHITE_WON("1-0"),
     BLACK_WON("0-1"),
     DRAW("1/2-1/2"),
-    ONGOING("*");
+    ONGOING("*"),
+    NOT_STARTED("");
 
-    static Map<String, GameResult> notation = new HashMap(4);
+    static Map<String, GameResult> notation = new HashMap<>(5);
     String description;
 
     private GameResult(String description) {
@@ -37,5 +38,6 @@ public enum GameResult {
         notation.put("0-1", BLACK_WON);
         notation.put("1/2-1/2", DRAW);
         notation.put("*", ONGOING);
+        notation.put("", NOT_STARTED);
     }
 }

@@ -14,8 +14,9 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class StockfishClient {
-    private ExecutorService executor, callback;
-    private Queue<Stockfish> engines;
+    private final ExecutorService executor;
+    private final ExecutorService callback;
+    private final Queue<Stockfish> engines;
 
     public StockfishClient(String path, int instances, Variant variant, Set<Option> options) throws StockfishInitException {
         executor = Executors.newFixedThreadPool(instances);
@@ -59,7 +60,7 @@ public class StockfishClient {
     }
 
     public static class Builder {
-        private Set<Option> options = new HashSet<>();
+        private final Set<Option> options = new HashSet<>();
         private Variant variant = Variant.DEFAULT;
         private String path = null;
         private int instances = 1;

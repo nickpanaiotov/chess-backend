@@ -3,6 +3,7 @@ package bg.chess.api.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -15,8 +16,11 @@ import java.io.Serializable;
 @Document(collection = "authority")
 public class Authority implements Serializable, GrantedAuthority {
     @Id
+    private String id;
+
     @NotNull
     @Size(max = 50)
+    @Indexed(unique = true)
     private String name;
 
     @Override

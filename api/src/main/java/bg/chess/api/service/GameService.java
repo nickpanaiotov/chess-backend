@@ -3,9 +3,6 @@ package bg.chess.api.service;
 import bg.chess.api.model.*;
 import bg.chess.api.repository.GameRepository;
 import bg.chess.api.repository.UserRepository;
-import com.github.bhlangonijr.chesslib.Board;
-import com.github.bhlangonijr.chesslib.game.GameContext;
-import com.github.bhlangonijr.chesslib.pgn.PgnHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,21 +32,24 @@ public class GameService {
             game.setDateStarted(System.currentTimeMillis());
 
             if (join != null) {
-                Player player = new Player();
-                player.setType(PlayerType.HUMAN);
-                player.setId(user.getId());
-                player.setDescription(user.getDescription());
-                player.setElo(user.getElo());
-                player.setName(user.getName());
+                Player player = getPlayer(user);
                 if (join.equals(Side.WHITE)) {
                     game.setWhitePlayer(player);
                 } else {
                     game.setBlackPlayer(player);
                 }
+
+                if (game.getMode().equals(GameMode.HUMAN_VS_MACHINE) ||
+                        game.getMode().equals(GameMode.MACHINE_VS_MACHINE)) {
+                    game.setResult(GameResult.ONGOING);
+                } else {
+                    game.setResult(GameResult.NOT_STARTED);
+                }
+            } else {
+                game.setResult(GameResult.NOT_STARTED);
             }
 
             game.setHalfMoves(new LinkedList<>());
-            game.setResult(GameResult.ONGOING);
             game.setBoardFen(Game.START_FEN);
 
             return this.gameRepository.save(game);
@@ -133,6 +133,40 @@ public class GameService {
         return this.userRepository.findByUsername(username)
                 .map(user -> user)
                 .flatMapMany(user -> this.gameRepository.findAllByPlayerId(user.getId()));
+    }
+
+    public Mono<Game> join(String username, String gameId, Side side) {
+        Mono<User> subscribeOnUser = this.userRepository.findByUsername(username);
+        Mono<Game> subscribeOnGame = this.gameRepository.findById(gameId);
+
+        return Mono.zip(subscribeOnUser, subscribeOnGame)
+                .flatMap(data -> {
+                    User user = data.getT1();
+                    Game game = data.getT2();
+
+                    if (game.getResult().equals(GameResult.NOT_STARTED)) {
+                        if (side.equals(Side.WHITE) && game.getWhitePlayer() == null) {
+                            Player player = getPlayer(user);
+                            game.setWhitePlayer(player);
+                        } else if (side.equals(Side.BLACK) && game.getBlackPlayer() == null) {
+                            Player player = getPlayer(user);
+                            game.setWhitePlayer(player);
+                        }
+                    } else {
+                        return Mono.error(new ResponseStatusException(CONFLICT, "You can join only to NOT_STARTED games"));
+                    }
+                    return this.gameRepository.save(game);
+                });
+    }
+
+    private Player getPlayer(User user) {
+        Player player = new Player();
+        player.setType(PlayerType.HUMAN);
+        player.setId(user.getId());
+        player.setDescription(user.getDescription());
+        player.setElo(user.getElo());
+        player.setName(user.getName());
+        return player;
     }
 
     public Mono<String> test() {

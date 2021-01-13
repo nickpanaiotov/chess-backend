@@ -8,20 +8,20 @@ import bg.chess.engine.enums.Query;
 import bg.chess.engine.enums.QueryType;
 import bg.chess.engine.enums.Variant;
 import bg.chess.engine.exceptions.StockfishInitException;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Random;
 
 @Service
 public class EngineService {
 
-    @Value("${engine.path:#{null}}")
-    private String path;
+    @Value("${engine.folder:#{null}}")
+    private Resource resource;
 
     @Value("${engine.instances:#{10}}")
     private int instances;
@@ -38,9 +38,9 @@ public class EngineService {
     private StockfishClient client;
 
     @PostConstruct
-    public void initEngine() throws StockfishInitException {
+    public void initEngine() throws StockfishInitException, IOException {
         this.client = new StockfishClient.Builder()
-                .setPath(path)
+                .setPath(resource.getURI().getPath())
                 .setInstances(instances)
                 .setOption(Option.Threads, numberOfThreads) // Number of threads that Stockfish will use
                 .setOption(Option.Minimum_Thinking_Time, minimumThinkingTime) // Minimum thinking time Stockfish will take
@@ -82,7 +82,6 @@ public class EngineService {
                 elo = game.getWhitePlayer().getElo();
             }
         }
-
 
         Random r = new Random();
         var time = r.nextInt((1000 - 100) + 1) + 100;

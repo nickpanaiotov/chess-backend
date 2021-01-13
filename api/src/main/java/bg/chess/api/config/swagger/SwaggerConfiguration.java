@@ -25,8 +25,8 @@ public class SwaggerConfiguration implements WebFluxConfigurer {
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(new ApiInfoBuilder()
-                        .description("My Reactive API")
-                        .title("My Domain object API")
+                        .description("Reactive API Documentation")
+                        .title("шах Ею API")
                         .version("1.0.0")
                         .build())
                 .ignoredParameterTypes(AuthenticationPrincipal.class)
