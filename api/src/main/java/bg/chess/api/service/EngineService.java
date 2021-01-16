@@ -80,9 +80,9 @@ public class EngineService {
 
         Query moveQuery = new Query.Builder(QueryType.Best_Move)
                 .setFen(game.getBoardFen())
-                .setDifficulty(Integer.parseInt((String) attributes.getOrDefault("difficulty", "10")))
-                .setDepth(Integer.parseInt((String) attributes.getOrDefault("depth", "10)")))
-                .setMovetime(Integer.parseInt((String) attributes.getOrDefault("time", "2000")))
+                .setDifficulty((Integer) attributes.getOrDefault("difficulty", 10))
+                .setDepth((Integer) attributes.getOrDefault("depth", 10))
+                .setMovetime((Integer) attributes.getOrDefault("time", 2000))
                 .build();
 
         return Mono.create(consumer -> {
