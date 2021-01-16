@@ -5,14 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
@@ -28,6 +29,10 @@ public class User extends Player implements Serializable {
     @Size(min = 60, max = 60)
     private String password;
 
+    private String provider;
+
+    private Map<String, Object> attributes = new HashMap<>();
+
     private boolean accountNonExpired = true;
     private boolean accountNonLocked = true;
     private boolean credentialsNonExpired = true;
@@ -39,5 +44,9 @@ public class User extends Player implements Serializable {
 
     public User() {
         this.type = PlayerType.HUMAN;
+    }
+
+    public void addAttribute(String key, Object value) {
+        this.attributes.put(key, value);
     }
 }

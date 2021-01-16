@@ -1,5 +1,6 @@
 package bg.chess.api.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
@@ -13,7 +14,10 @@ public class Game {
     private String gameId;
     private Long dateStarted;
 
+    @JsonDeserialize(as=User.class)
     private Player whitePlayer;
+
+    @JsonDeserialize(as=User.class)
     private Player blackPlayer;
 
     private GameMode mode;

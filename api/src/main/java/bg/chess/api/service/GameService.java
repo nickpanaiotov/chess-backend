@@ -53,7 +53,7 @@ public class GameService {
             game.setBoardFen(Game.START_FEN);
 
             return this.gameRepository.save(game);
-        });
+        }).switchIfEmpty(Mono.error(new ResponseStatusException(NOT_FOUND, "Unable to find user with username")));
     }
 
     public Mono<Game> getGame(String gameId) {
@@ -160,7 +160,7 @@ public class GameService {
     }
 
     private Player getPlayer(User user) {
-        Player player = new Player();
+        Player player = new User();
         player.setType(PlayerType.HUMAN);
         player.setId(user.getId());
         player.setDescription(user.getDescription());

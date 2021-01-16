@@ -1,6 +1,5 @@
 package bg.chess.api.service;
 
-import bg.chess.api.ChessApplication;
 import bg.chess.api.model.*;
 import bg.chess.engine.StockfishClient;
 import bg.chess.engine.enums.Option;
@@ -15,7 +14,8 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Random;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class EngineService {
@@ -49,8 +49,6 @@ public class EngineService {
                 .build();
     }
 
-
-
     public Mono<String> checkers(String boardFen) {
         Query moveQuery = new Query.Builder(QueryType.Checkers)
                 .setFen(boardFen)
@@ -72,25 +70,19 @@ public class EngineService {
     }
 
     public Mono<String> bestMove(Game game) {
-        var elo = 10;
+        Map<String, Object> attributes = new HashMap<>();
         if (game.getTurn().equals(Side.WHITE) && game.getWhitePlayer().getType().equals(PlayerType.ENGINE)) {
-            if (game.getWhitePlayer().getElo() != 0) {
-                elo = game.getWhitePlayer().getElo();
-            }
-        } else if (game.getTurn().equals(Side.BLACK) && game.getBlackPlayer().getType().equals(PlayerType.ENGINE)) {
-            if (game.getWhitePlayer().getElo() != 0) {
-                elo = game.getWhitePlayer().getElo();
-            }
-        }
+            attributes = game.getWhitePlayer().getAttributes();
 
-        Random r = new Random();
-        var time = r.nextInt((1000 - 100) + 1) + 100;
+        } else if (game.getTurn().equals(Side.BLACK) && game.getBlackPlayer().getType().equals(PlayerType.ENGINE)) {
+            attributes = game.getBlackPlayer().getAttributes();
+        }
 
         Query moveQuery = new Query.Builder(QueryType.Best_Move)
                 .setFen(game.getBoardFen())
-                .setDifficulty(elo)
-                .setDepth(1)
-                .setMovetime(time)
+                .setDifficulty(Integer.parseInt((String) attributes.getOrDefault("difficulty", "10")))
+                .setDepth(Integer.parseInt((String) attributes.getOrDefault("depth", "10)")))
+                .setMovetime(Integer.parseInt((String) attributes.getOrDefault("time", "2000")))
                 .build();
 
         return Mono.create(consumer -> {

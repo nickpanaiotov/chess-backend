@@ -7,10 +7,11 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import javax.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Data
-public class Player {
+public abstract class Player {
     @Id
     protected String id;
 
@@ -27,4 +28,6 @@ public class Player {
     @JsonIgnore
     @DBRef(db = "game")
     private Set<Game> games = new HashSet<>();
+
+    public abstract Map<String, Object> getAttributes();
 }

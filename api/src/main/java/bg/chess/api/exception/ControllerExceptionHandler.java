@@ -30,7 +30,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Map<String, Object>> responseStatusException(ServerHttpRequest request, ResponseStatusException ex) {
         this.logException(ex);
 
-        Map<String, Object> errorPropertiesMap = this.getErrorObject(request, ex.getStatus(), ex.getMessage());
+        Map<String, Object> errorPropertiesMap = this.getErrorObject(request, ex.getStatus(), ex.getReason());
         return new ResponseEntity<>(errorPropertiesMap, ex.getStatus());
     }
 

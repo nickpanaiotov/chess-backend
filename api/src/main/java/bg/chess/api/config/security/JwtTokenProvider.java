@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.joining;
 
 @Slf4j
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider extends JwtProperties {
     private static final String AUTHORITIES_KEY = "roles";
 
     @Autowired
@@ -71,5 +71,20 @@ public class JwtTokenProvider {
             log.trace("Invalid JWT token trace.", e);
         }
         return false;
+    }
+
+    public String createToken(bg.chess.api.model.User user) {
+        String username = user.getUsername();
+        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put(AUTHORITIES_KEY, authorities.stream().map(GrantedAuthority::getAuthority).collect(joining(",")));
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + jwtProperties.getValidityInMs());
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
     }
 }
