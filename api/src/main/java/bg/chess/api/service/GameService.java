@@ -40,7 +40,7 @@ public class GameService {
                 }
 
                 if (game.getMode().equals(GameMode.HUMAN_VS_MACHINE) ||
-                        game.getMode().equals(GameMode.MACHINE_VS_MACHINE)) {
+                        game.getMode().equals(GameMode.MACHINE_VS_HUMAN)) {
                     game.setResult(GameResult.ONGOING);
                 } else {
                     game.setResult(GameResult.NOT_STARTED);
